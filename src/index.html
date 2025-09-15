@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Check-in System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .status-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .status-btn {
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .status-btn.check-in {
+            color: #10b981;
+        }
+
+        .status-btn.check-out {
+            color: #ef4444;
+        }
+
+        .status-btn.active.check-in {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .status-btn.active.check-out {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .current-time {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            border: 1px solid #e1e8ed;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+            border: 1px solid #a7f3d0;
+        }
+
+        .recent-records {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e1e8ed;
+        }
+
+        .recent-records h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .record-item {
+            background: #f8fafc;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .record-status.check-in {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .record-status.check-out {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .status-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">EC</div>
+            <h1>Employee Check-in</h1>
+            <p class="subtitle">Track your work hours efficiently</p>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            Check-in recorded successfully!
+        </div>
+
+        <form id="checkinForm">
+            <div class="form-group">
+                <label for="employeeId">Employee ID</label>
+                <input type="text" id="employeeId" name="employeeId" required placeholder="Enter your employee ID">
+            </div>
+
+            <div class="form-group">
+                <label for="employeeName">Full Name</label>
+                <input type="text" id="employeeName" name="employeeName" required placeholder="Enter your full name">
+            </div>
+
+            <div class="form-group">
+                <label for="department">Department</label>
+                <select id="department" name="department" required>
+                    <option value="">Select Department</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Sales">Sales</option>
+                    <option value="HR">Human Resources</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Operations">Operations</option>
+                    <option value="Support">Customer Support</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <div class="status-buttons">
+                    <div class="status-btn check-in" data-status="check-in">
+                        📍 Check In
+                    </div>
+                    <div class="status-btn check-out" data-status="check-out">
+                        🚪 Check Out
+                    </div>
+                </div>
+                <input type="hidden" id="status" name="status" required>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                Submit Check-in
+            </button>
+        </form>
+
+        <div class="current-time" id="currentTime">
+            Current Time: Loading...
+        </div>
+
+        <div class="recent-records">
+            <h3>Recent Records</h3>
+            <div id="recentRecords">
+                <div class="record-item">
+                    <span>No records yet</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let checkinRecords = JSON.parse(localStorage.getItem('checkinRecords') || '[]');
+        let selectedStatus = '';
+
+        // DOM elements
+        const statusButtons = document.querySelectorAll('.status-btn');
+        const statusInput = document.getElementById('status');
+        const submitBtn = document.getElementById('submitBtn');
+        const form = document.getElementById('checkinForm');
+        const successMessage = document.getElementById('successMessage');
+        const currentTimeElement = document.getElementById('currentTime');
+        const recentRecordsElement = document.getElementById('recentRecords');
+
+        // Status button handling
+        statusButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                statusButtons.forEach(b => b.classList.remove('active'));
+                
+                // Add active class to clicked button
+                btn.classList.add('active');
+                
+                // Set selected status
+                selectedStatus = btn.dataset.status;
+                statusInput.value = selectedStatus;
+                
+                // Enable submit button if form is valid
+                checkFormValidity();
+            });
+        });
+
+        // Form validation
+        function checkFormValidity() {
+            const employeeId = document.getElementById('employeeId').value.trim();
+            const employeeName = document.getElementById('employeeName').value.trim();
+            const department = document.getElementById('department').value;
+            
+            if (employeeId && employeeName && department && selectedStatus) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = selectedStatus === 'check-in' ? 'Submit Check In' : 'Submit Check Out';
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submit Check-in';
+            }
+        }
+
+        // Add event listeners for form inputs
+        document.getElementById('employeeId').addEventListener('input', checkFormValidity);
+        document.getElementById('employeeName').addEventListener('input', checkFormValidity);
+        document.getElementById('department').addEventListener('change', checkFormValidity);
+
+        // Form submission
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const record = {
+                id: Date.now(),
+                employeeId: formData.get('employeeId'),
+                employeeName: formData.get('employeeName'),
+                department: formData.get('department'),
+                status: formData.get('status'),
+                timestamp: new Date().toISOString(),
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString()
+            };
+
+            // Add to records
+            checkinRecords.unshift(record);
+            
+            // Keep only last 10 records
+            if (checkinRecords.length > 10) {
+                checkinRecords = checkinRecords.slice(0, 10);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('checkinRecords', JSON.stringify(checkinRecords));
+            
+            // Show success message
+            successMessage.style.display = 'block';
+            successMessage.textContent = `${record.status === 'check-in' ? 'Check-in' : 'Check-out'} recorded successfully!`;
+            
+            // Reset form
+            form.reset();
+            statusButtons.forEach(b => b.classList.remove('active'));
+            selectedStatus = '';
+            statusInput.value = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submit Check-in';
+            
+            // Update recent records
+            updateRecentRecords();
+            
+            // Hide success message after 3 seconds
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+        });
+
+        // Update current time
+        function updateCurrentTime() {
+            const now = new Date();
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZoneName: 'short'
+            };
+            currentTimeElement.textContent = `Current Time: ${now.toLocaleDateString('en-US', options)}`;
+        }
+
+        // Update recent records display
+        function updateRecentRecords() {
+            if (checkinRecords.length === 0) {
+                recentRecordsElement.innerHTML = '<div class="record-item"><span>No records yet</span></div>';
+                return;
+            }
+
+            recentRecordsElement.innerHTML = checkinRecords.map(record => `
+                <div class="record-item">
+                    <div>
+                        <strong>${record.employeeName}</strong> (${record.employeeId})<br>
+                        <small>${record.department}</small>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="record-status ${record.status}">${record.status === 'check-in' ? 'Checked In' : 'Checked Out'}</div>
+                        <small>${record.time} - ${record.date}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize
+        updateCurrentTime();
+        updateRecentRecords();
+        
+        // Update time every second
+        setInterval(updateCurrentTime, 1000);
+    </script>
+</body>
+</html>
