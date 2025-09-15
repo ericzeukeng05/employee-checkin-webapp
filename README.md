@@ -223,8 +223,8 @@ If you encounter issues:
 For questions or support:
 
 - Create an issue on GitHub
-- Email: your.email@domain.com
-- LinkedIn: [Your LinkedIn Profile]
+- Email: erickzeukeng05@gmail.com
+- LinkedIn: www.linkedin.com/in/eric-marius-kenfack-zeukeng-591284384
 
 ## 🙏 Acknowledgments
 
