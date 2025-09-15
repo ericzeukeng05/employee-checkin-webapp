@@ -1,5 +1,10 @@
 ### AL ###
 #Template for AL projects for Dynamics 365 Business Central
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+terraform.tfvars
 #launch.json folder
 .vscode/
 #Cache folder
